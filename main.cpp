@@ -40,6 +40,9 @@ KNOB<string> KnobConfigFile(KNOB_MODE_WRITEONCE,    "pintool",
 KNOB<UINT64> KnobInstructionCount(KNOB_MODE_WRITEONCE, "pintool",
         "max_inst","1000000000", "Number of instructions to profile");
 
+KNOB<UINT64> KnobInsertPos(KNOB_MODE_WRITEONCE, "pintool",
+        "lru_pos", "0", "Default LRU insertion position");
+
 // Globals for the various caches
 /* ===================================================================== */
 l1icache* icache;
@@ -81,6 +84,8 @@ void CreateCaches(void)
     // Create the one and only memory
     mem = new memory();
 
+    int ins_pos = (int) KnobInsertPos.Value();
+
     // Parse config file and create the three caches
     int i = 0;
     while (!config.eof()){
@@ -92,7 +97,7 @@ void CreateCaches(void)
         switch(i){
             case 0:
                 parser >> bsize >> comma >> csize >> comma >> assoc;
-                llcache = new l2cache(bsize, csize, assoc, mem);
+                llcache = new l2cache(bsize, csize, assoc, mem, ins_pos);
                 break;
             case 1:
                 parser >> bsize >> comma >> csize >> comma >> assoc;
@@ -142,6 +147,10 @@ void PrintResults(void)
     out.setf(ios::fixed, ios::floatfield);
     out.precision(2);
 
+    float l2missrate =  (float)llcache->getTotalMiss() / ((float) llcache->getRequest()) * 100.;
+    float l2zerreouserate =  (float)llcache->getZeroReuses() / ((float) llcache->getTotalMiss()) * 100.;
+
+
     out << "---------------------------------------";
     out << endl << "\t\tSimulation Results" << endl;
     out << "---------------------------------------";
@@ -168,7 +177,11 @@ void PrintResults(void)
 
     out << "\t\t D-Cache Miss: " << dcache->getTotalMiss() << " out of " << dcache->getRequest() << endl;
 
-    out << "\t\t L2-Cache Miss: " << llcache->getTotalMiss() << " out of " << llcache->getRequest() << endl;
+    out << "\t\t L2-Cache Miss: " << llcache->getTotalMiss() << " out of " << llcache->getRequest();
+    out << " (" << l2missrate << " percent)" << endl;
+
+    out << "\t\t L2-Cache Zero Reuse Blocks: " << llcache->getZeroReuses() << " out of ";
+    out << llcache->getTotalMiss() << " (" << l2zerreouserate << " percent)" << endl;
 
     out << endl;
 

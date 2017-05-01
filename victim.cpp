@@ -2,7 +2,7 @@
 #include "victim.h"
 
 victim_cache::victim_cache( int blockSize, int totalCacheSize) :
-    cache( blockSize, totalCacheSize, totalCacheSize / blockSize, nullptr, false)
+    cache( blockSize, totalCacheSize, totalCacheSize / blockSize, nullptr, false, 0)
     { }
 
 bool victim_cache::check_hit( unsigned long address) {

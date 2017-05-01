@@ -24,6 +24,7 @@ struct cacheEntry
     bool Valid;
     bool zeroReuse;
     int insertion;
+    int hashval;
 };
 
 class cache
@@ -50,7 +51,7 @@ public:
     virtual unsigned int getSetSize() {return setSize;}
 
 protected:
-    cache( int blockSize, int totalCacheSize, int associativity, cache* nextLevel, bool writebackDirty );
+    cache( int blockSize, int totalCacheSize, int associativity, cache* nextLevel, bool writebackDirty, int ins_pos);
 
     //Calculate the Tag and Set of an address based on this cache's properties
     unsigned int getTag( unsigned int address );
@@ -85,6 +86,7 @@ protected:
     const int blockSz;
     const int totalCacheSz;
     const int assoc;
+    const int insertPos;
 
     // Bit Field Sizes
     const unsigned int blockOffsetSize;
@@ -101,6 +103,7 @@ protected:
     UINT64 requests;
     UINT64 entriesKickedOut;
     UINT64 zeroReuseEvictions;
+    UINT64 linesLoaded;
 
     // The actual cache array
     cacheEntry* cacheMem;

@@ -7,11 +7,12 @@
 
 #include "cache.h"
 
-cache::cache( int blockSize, int totalCacheSize, int associativity, cache* nextLevel, bool writebackDirty) :
+cache::cache( int blockSize, int totalCacheSize, int associativity, cache* nextLevel, bool writebackDirty, int ins_pos) :
     // Set Cache properties
     blockSz(blockSize),
     totalCacheSz(totalCacheSize),
     assoc(associativity),
+    insertPos(ins_pos),
     // Calculate Cache bit sizes and masks
     blockOffsetSize(log2(blockSize)),
     setSize(log2(totalCacheSize / (blockSize * associativity))),
@@ -34,6 +35,7 @@ cache::cache( int blockSize, int totalCacheSize, int associativity, cache* nextL
     requests = 0;
     entriesKickedOut = 0;
     zeroReuseEvictions = 0;
+    linesLoaded = 0;
 }
 
 void cache::clearCache()
@@ -108,24 +110,6 @@ void cache::updateLRU( int setBits, int MRU_index )
     cacheMem[ MRU_index + setBits*assoc ].LRU_status = 0;
 }
 
-void cache::queueInsert( int setBits, int MRU_index, int insertion_pos )
-{
-    int upperBounds = assoc - 1;
-
-    // Update all of the other blocks behind the newly inserted block
-    for( int i = 0; i < assoc; i++ )
-    {
-        if( cacheMem[ i + setBits*assoc ].LRU_status >= insertion_pos &&
-                cacheMem[ i + setBits*assoc ].LRU_status < upperBounds )
-        {
-            cacheMem[ i + setBits*assoc ].LRU_status++;
-        }
-    }    
-
-    // set the LRU position of the new block to the desired value
-    cacheMem[ MRU_index + setBits*assoc ].LRU_status = insertion_pos;
-}
-
 //
 // Input:
 //   setBits - The set field of the address
@@ -191,12 +175,6 @@ void cache::addRequest()
 void cache::addEntryRemoved()
 {
     entriesKickedOut++;
-}
-
-// Indicate that a zero-reuse block was evicted
-void cache::addZeroReuse()
-{
-    zeroReuseEvictions++;
 }
 
 //
@@ -278,10 +256,6 @@ void cache::addressRequest( unsigned long address ) {
         // Get the LRU index
         int indexLRU = getLRU( setField );
         if( cacheMem[ indexLRU + setField*assoc].Valid == true ) {
-            // check if the block was ever reused
-            if (cacheMem [indexLRU + setField*assoc].zeroReuse == true) {
-                addZeroReuse ();
-            }
             addEntryRemoved();
         }
 
@@ -308,7 +282,6 @@ void cache::addressRequest( unsigned long address ) {
         cacheMem[ indexLRU + setField*assoc].Tag = tagField;
         cacheMem[ indexLRU + setField*assoc].Valid = true;
         cacheMem[ indexLRU + setField*assoc].Valid = true;
-        cacheMem[ indexLRU + setField*assoc].zeroReuse = true;        
         updateLRU( setField, indexLRU );
     }
     else {
@@ -317,8 +290,6 @@ void cache::addressRequest( unsigned long address ) {
 
         // Update LRU / Tag / Valid
         updateLRU( setField, index );
-
-        cacheMem[ index + setField*assoc].zeroReuse = false;                
 
     }
 }
