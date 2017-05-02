@@ -131,7 +131,7 @@ void CheckInstructionLimits(void)
 }
 
 /* ===================================================================== */
-void MemoryOp(ADDRINT address)
+void MemoryOp(ADDRINT address, ADDRINT ins_ptr)
 {
     if(dcache->checkHit(address))
     {
@@ -153,15 +153,16 @@ void MemoryOp(ADDRINT address)
             }
 
             // Training
-            int hashIndex = llcache->getHashIndex(address);
+            int hashVal = llcache->getHashIndex(address);
             int prediction = llcache->getPrediction(address);
             bool zeroReuse = llcache->getZeroReuse(address);
-            perceptron->train(hashIndex, prediction, zeroReuse);
+            perceptron->train(hashVal, prediction, zeroReuse);
 
             // Replacement
             dcache->addressMiss(address);
             int reusePrediction = perceptron->reusePredict(ins_ptr);
-            llcache->addressMissDynamic(address, reusePrediction);
+            int tableSize = perceptron->getTableSz();
+            llcache->addressMissDynamic(address, reusePrediction, ins_ptr, tableSize);
             mem->addressRequest(address);
             mem->addressRequest(address);
         }
@@ -173,31 +174,32 @@ void AllInstructions(ADDRINT ins_ptr)
 {
     icount++;
 
-    if(icache->checkHit(address))
+    if(icache->checkHit(ins_ptr))
     {
-        icache->addressHit(address);
+        icache->addressHit(ins_ptr);
     }
     else
     {
-        if(llcache->checkHit(address))
+        if(llcache->checkHit(ins_ptr))
         {
-            icache->addressMiss(address);
-            llcache->addressHit(address);
+            icache->addressMiss(ins_ptr);
+            llcache->addressHit(ins_ptr);
         }
         else
         {
             // Training
-            int hashIndex = llcache->getHashIndex(address);
-            int prediction = llcache->getPrediction(address);
-            bool zeroReuse = llcache->getZeroReuse(address);
-            perceptron->train(hashIndex, prediction, zeroReuse);
+            int hashVal = llcache->getHashIndex(ins_ptr);
+            int prediction = llcache->getPrediction(ins_ptr);
+            bool zeroReuse = llcache->getZeroReuse(ins_ptr);
+            perceptron->train(hashVal, prediction, zeroReuse);
 
             // Replacement
-            icache->addressMiss(address);
+            icache->addressMiss(ins_ptr);
             int reusePrediction = perceptron->reusePredict(ins_ptr);
-            llcache->addressMissDynamic(address, reusePrediction);
-            mem->addressRequest(address);
-            mem->addressRequest(address);
+            int tableSize = perceptron->getTableSz();
+            llcache->addressMissDynamic(ins_ptr, reusePrediction, ins_ptr, tableSize);
+            mem->addressRequest(ins_ptr);
+            mem->addressRequest(ins_ptr);
         }
     }
 
@@ -273,7 +275,7 @@ void Instruction(INS ins, VOID *v)
     if (INS_IsMemoryRead(ins)) {
         INS_InsertPredicatedCall(
                 ins, IPOINT_BEFORE, (AFUNPTR) MemoryOp,
-                IARG_MEMORYREAD_EA,
+                IARG_MEMORYREAD_EA, IARG_INST_PTR,
                 IARG_END);
 
     }
@@ -284,7 +286,7 @@ void Instruction(INS ins, VOID *v)
     if ( INS_IsMemoryWrite(ins) ) {
         INS_InsertPredicatedCall(
                 ins, IPOINT_BEFORE,  (AFUNPTR) MemoryOp,
-                IARG_MEMORYWRITE_EA,
+                IARG_MEMORYWRITE_EA, IARG_INST_PTR,
                 IARG_END);
     }
 }

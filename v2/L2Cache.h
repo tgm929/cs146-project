@@ -116,13 +116,13 @@ public:
         if(prediction == -1) {
             return (assoc - 1);
         }
-        // Insert in middle
-        else if(prediction == 1) {
-            return ((assoc / 2) - 1);
-        }
         // Insert as MRU
-        else {
+        else if(prediction == 1) {
             return 0;
+        }
+        // Insert in middle
+        else {
+            return ((assoc / 2) - 1);
         }
     }
 
@@ -177,7 +177,7 @@ public:
         cacheMem[ index + setField*assoc].zeroReuse = false; 
     }
 
-    void cache::addressMissDynamic( unsigned long address, int reusePrediction,  ) {
+    void cache::addressMissDynamic( unsigned long address, int reusePrediction, unsigned long ins_ptr, int tableSize ) {
         
         // Count that access as a hit
         addRequest();
@@ -197,12 +197,16 @@ public:
             addEntryRemoved();
         }
 
+        int insertPosition = getInsertPosition(reusePrediction);
+        int hashVal = (ins_ptr >> (getBlockOffsetSize()) % tableSize;
+
         // Update LRU / Tag / Valid
         cacheMem[ indexLRU + setField*assoc].Tag = tagField;
         cacheMem[ indexLRU + setField*assoc].Valid = true;
         cacheMem[ indexLRU + setField*assoc].zeroReuse = true;
-
-        int insertPosition = getInsertPosition(reusePrediction);
+        cacheMem[ indexLRU + setField*assoc].prediction = reusePrediction;
+        cacheMem[ indexLRU + setField*assoc].hashIndex = hashVal;
+        
 
         // Insert it at a specified value within the queue
         queueInsert(setField, indexLRU, insertPosition);

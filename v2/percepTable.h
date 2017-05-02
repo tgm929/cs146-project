@@ -1,5 +1,5 @@
 //
-// Generic Cache - Header File
+// Perceptron Reuse Predictor - Header File
 //
 
 #ifndef __GEN_CACHE__
@@ -19,8 +19,6 @@ public:
 	virtual ~percepTable() {};
 
 	virtual void train (int hashIndex, int prediction, bool zeroReuse);
-	virtual void incrCtr ( int hashIndex );
-	virtual void decrCtr ( int hashIndex );
 
 	virtual int reusePredict ( int hashIndex );
 
@@ -30,4 +28,6 @@ public:
 
 protected:
 	percepTable ( int tableSize, int maxCtr, int threshold);
-}
+};
+
+#endif
