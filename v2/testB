@@ -1,0 +1,18 @@
+make clean
+make all
+
+## testing for lib_quantum benchmark
+pin -t obj-intel64/main.so -config cB-8-0 -outfile tBq-8-0.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+pin -t obj-intel64/main.so -config cB-8-2 -outfile tBq-8-2.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+pin -t obj-intel64/main.so -config cB-8-4 -outfile tBq-8-4.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+pin -t obj-intel64/main.so -config cB-8-6 -outfile tBq-8-6.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+
+pin -t obj-intel64/main.so -config cB-8-0 -outfile tBd-8-0.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+pin -t obj-intel64/main.so -config cB-8-2 -outfile tBd-8-2.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+pin -t obj-intel64/main.so -config cB-8-4 -outfile tBd-8-4.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+pin -t obj-intel64/main.so -config cB-8-6 -outfile tBd-8-6.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+
+pin -t obj-intel64/main.so -config cB-8-0 -outfile tBh-8-0.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
+pin -t obj-intel64/main.so -config cB-8-2 -outfile tBh-8-2.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
+pin -t obj-intel64/main.so -config cB-8-4 -outfile tBh-8-4.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
+pin -t obj-intel64/main.so -config cB-8-6 -outfile tBh-8-6.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41

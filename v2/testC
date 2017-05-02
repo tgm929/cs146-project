@@ -1,0 +1,21 @@
+make clean
+make all
+
+## testing for lib_quantum benchmark
+pin -t obj-intel64/main.so -config cC-2-1 -outfile tCq-2-1.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+pin -t obj-intel64/main.so -config cC-4-2 -outfile tCq-4-2.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+pin -t obj-intel64/main.so -config cC-8-4 -outfile tCq-8-4.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+pin -t obj-intel64/main.so -config cC-16-8 -outfile tCq-16-8.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+pin -t obj-intel64/main.so -config cC-32-16 -outfile tCq-32-16.txt -max_inst 100000000 -- /home/cs246/benchmarks/libquantum_O3 400 25
+
+pin -t obj-intel64/main.so -config cC-2-1 -outfile tCd-2-1.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+pin -t obj-intel64/main.so -config cC-4-2 -outfile tCd-4-2.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+pin -t obj-intel64/main.so -config cC-8-4 -outfile tCd-8-4.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+pin -t obj-intel64/main.so -config cC-16-8 -outfile tCd-16-8.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+pin -t obj-intel64/main.so -config cC-32-16 -outfile tCqd-32-16.txt -max_inst 100000000 -- /home/cs246/benchmarks/dealII_O3 10
+
+pin -t obj-intel64/main.so -config cC-2-1 -outfile tCh-2-1.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
+pin -t obj-intel64/main.so -config cC-4-2 -outfile tCh-4-2.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
+pin -t obj-intel64/main.so -config cC-8-4 -outfile tCh-8-4.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
+pin -t obj-intel64/main.so -config cC-16-8 -outfile tCh-16-8.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
+pin -t obj-intel64/main.so -config cC-32-16 -outfile tCh-32-16.txt -max_inst 100000000 -- /home/cs246/benchmarks/hmmer_O3 /home/cs246/benchmarks/inputs/nph3.hmm /home/cs246/benchmarks/inputs/swiss41
