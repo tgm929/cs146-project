@@ -128,7 +128,7 @@ public:
         }
     }
 
-    int getHashIndex( unsigned long address) {
+    unsigned long getHashIndex( unsigned long address) {
 
         unsigned long tagField = getTag( address );
         unsigned long setField = getSet( address );
@@ -200,14 +200,13 @@ public:
         }
 
         int insertPosition = getInsertPosition(reusePrediction);
-        int hashVal = (ins_ptr >> (getBlockOffsetSize())) % tableSize;
 
         // Update LRU / Tag / Valid
         cacheMem[ indexLRU + setField*assoc].Tag = tagField;
         cacheMem[ indexLRU + setField*assoc].Valid = true;
         cacheMem[ indexLRU + setField*assoc].zeroReuse = true;
         cacheMem[ indexLRU + setField*assoc].prediction = reusePrediction;
-        cacheMem[ indexLRU + setField*assoc].hashIndex = hashVal;
+        cacheMem[ indexLRU + setField*assoc].hashIndex = ins_ptr;
         
 
         // Insert it at a specified value within the queue

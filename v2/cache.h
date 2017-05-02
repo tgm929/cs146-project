@@ -24,7 +24,7 @@ struct cacheEntry
     bool Valid;
     bool zeroReuse;
     int prediction;
-    int hashIndex;
+    unsigned long hashIndex;
 };
 
 class cache

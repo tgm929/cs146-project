@@ -10,6 +10,8 @@
 #include "L2Cache.h"
 #include "percepTable.h"
 
+#include "stdio.h"
+
 using namespace std;
 /*
 This code implements a simple cache simulator. In this implementation, we
@@ -133,30 +135,43 @@ void CheckInstructionLimits(void)
 /* ===================================================================== */
 void MemoryOp(ADDRINT address, ADDRINT ins_ptr)
 {
+    //printf("MemoryOp\n");
+
     if(dcache->checkHit(address))
     {
+        //printf("dcache hit\n");
         dcache->addressHit(address);
     }
     else
     {
+        //printf("dcache miss\n");
         if(llcache->checkHit(address))
         {
+            //printf("llcache hit\n");
             dcache->addressMiss(address);
             llcache->addressReuse(address);
         }
         else
         {
+            //printf("llcache miss\n");
             // Writeback
             unsigned long victim = dcache->getVictim(address);
             if (victim != 0){
                 llcache->addressHit(victim);
             }
 
+            //printf("writeback complete\n");
+
             // Training
-            int hashVal = llcache->getHashIndex(address);
+            unsigned long hash_addr = llcache->getHashIndex(address);
+            //printf("writeback 1\n");
             int prediction = llcache->getPrediction(address);
+            //printf("writeback 2\n");
             bool zeroReuse = llcache->getZeroReuse(address);
-            perceptron->train(hashVal, prediction, zeroReuse);
+            //printf("writeback 3\n");
+            perceptron->train(hash_addr, prediction, zeroReuse);
+
+            //printf("training complete\n");
 
             // Replacement
             dcache->addressMiss(address);
@@ -165,6 +180,8 @@ void MemoryOp(ADDRINT address, ADDRINT ins_ptr)
             llcache->addressMissDynamic(address, reusePrediction, ins_ptr, tableSize);
             mem->addressRequest(address);
             mem->addressRequest(address);
+
+            //printf("llcache replacement\n");
         }
     }
 }
@@ -172,34 +189,49 @@ void MemoryOp(ADDRINT address, ADDRINT ins_ptr)
 /* ===================================================================== */
 void AllInstructions(ADDRINT ins_ptr)
 {
+    //printf("AllInstructions\n");
+
     icount++;
 
     if(icache->checkHit(ins_ptr))
     {
+        //printf("icache hit\n");
         icache->addressHit(ins_ptr);
     }
     else
     {
+        //printf("icache miss\n");
         if(llcache->checkHit(ins_ptr))
         {
+            //printf("llcache hit\n");
             icache->addressMiss(ins_ptr);
             llcache->addressReuse(ins_ptr);
         }
         else
         {
+            //printf("llcache miss\n");
             // Training
-            int hashVal = llcache->getHashIndex(ins_ptr);
+            int hash_addr = llcache->getHashIndex(ins_ptr);
             int prediction = llcache->getPrediction(ins_ptr);
             bool zeroReuse = llcache->getZeroReuse(ins_ptr);
-            perceptron->train(hashVal, prediction, zeroReuse);
+            perceptron->train(hash_addr, prediction, zeroReuse);
+
+            //printf("Training complete\n");
 
             // Replacement
+            //printf("test 1\n");
             icache->addressMiss(ins_ptr);
+            //printf("test 2\n");
             int reusePrediction = perceptron->reusePredict(ins_ptr);
+            //printf("test 3\n");
             int tableSize = perceptron->getTableSz();
+            //printf("test 4\n");
             llcache->addressMissDynamic(ins_ptr, reusePrediction, ins_ptr, tableSize);
+            //printf("test 5\n");
             mem->addressRequest(ins_ptr);
             mem->addressRequest(ins_ptr);
+
+            //printf("llcache replacement\n");
         }
     }
 

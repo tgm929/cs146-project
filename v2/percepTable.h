@@ -8,12 +8,17 @@
 #include <iostream>
 #include "pin.H"
 
+/*struct tableEntry
+{
+    int feature1;
+};*/
+
 class percepTable {
 public:
 	percepTable ( int tableSize, int maxCtr, int threshold);
 
-	void train (int hashIndex, int prediction, bool zeroReuse);
-	int reusePredict ( int hashIndex );
+	void train (unsigned long ins_ptr, int prediction, bool zeroReuse);
+	int reusePredict ( unsigned long ins_ptr );
 	int getTableSz();
 	int getMaxCtr();
 	int getThreshold();
