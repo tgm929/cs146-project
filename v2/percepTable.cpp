@@ -25,12 +25,12 @@ void percepTable::train (unsigned long ins_ptr, int prediction, bool zeroReuse) 
     int hashVal = (ins_ptr >> 6) % getTableSz();
 
     //printf("hashVal = %d\n", hashVal);
+    prediction++;
 
-
-    if(prediction != -1 && zeroReuse == true && predictionTable[hashVal] != (0 - maxCounter)) {
+    if(zeroReuse == true && predictionTable[hashVal] != (0 - maxCounter)) {
         predictionTable[hashVal]--;
     }
-    else if(prediction != 1 && zeroReuse == false && predictionTable[hashVal] != maxCounter) {
+    else if(zeroReuse == false && predictionTable[hashVal] != maxCounter) {
         predictionTable[hashVal]++;
     }
 }
