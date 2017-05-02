@@ -57,7 +57,7 @@ public:
     virtual unsigned int getSetSize() {return setSize;}
 
 protected:
-    cache( int blockSize, int totalCacheSize, int associativity, cache* nextLevel, bool writebackDirty, int ins_pos);
+    cache( int blockSize, int totalCacheSize, int associativity, cache* nextLevel, bool writebackDirty);
 
     //Calculate the Tag and Set of an address based on this cache's properties
     unsigned int getTag( unsigned int address );
@@ -92,7 +92,7 @@ protected:
     const int blockSz;
     const int totalCacheSz;
     const int assoc;
-    const int insertPos;
+    //const int insertPos;
 
     // Bit Field Sizes
     const unsigned int blockOffsetSize;

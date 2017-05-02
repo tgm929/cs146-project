@@ -12,7 +12,7 @@ cache::cache( int blockSize, int totalCacheSize, int associativity, cache* nextL
     blockSz(blockSize),
     totalCacheSz(totalCacheSize),
     assoc(associativity),
-    insertPos(ins_pos),
+    //insertPos(ins_pos),
     // Calculate Cache bit sizes and masks
     blockOffsetSize(log2(blockSize)),
     setSize(log2(totalCacheSize / (blockSize * associativity))),
@@ -298,7 +298,7 @@ void cache::addressRequest( unsigned long address ) {
 
 // OUR CODE BELOW THIS LINE
 
-bool cache::check_hit( unsigned long address) {
+bool cache::checkHit( unsigned long address) {
 
     unsigned long tagField = getTag( address );
     unsigned long setField = getSet( address );
@@ -334,7 +334,6 @@ void cache::addressHit( unsigned long address ) {
 unsigned long cache::getVictim( unsigned long address ) {
 
     // Compute Set / Tag
-    unsigned long tagField = getTag( address );
     unsigned long setField = getSet( address );
 
     // Get LRU index
@@ -377,5 +376,5 @@ void cache::addressMiss( unsigned long address ) {
     cacheMem[ indexLRU + setField*assoc].Valid = true;
 
     // Update LRU / Tag / Valid
-    updateLRU( setField, index );
+    updateLRU( setField, indexLRU );
 }

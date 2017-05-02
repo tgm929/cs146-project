@@ -10,7 +10,7 @@
 class l1icache : public cache {
 public:
     l1icache( int blockSize, int totalCacheSize, int associativity, cache *nextLevel) :
-        cache( blockSize, totalCacheSize, associativity, nextLevel, false, 0)
+        cache( blockSize, totalCacheSize, associativity, nextLevel, false)
     { }
 };
 

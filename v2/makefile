@@ -1,3 +1,4 @@
+
 ##
 ## PIN tools
 ##
@@ -36,7 +37,7 @@ include $(PIN_ROOT)/source/tools/Config/makefile.unix.config
 
 TOOL_ROOTS = main
 TOOLS = $(TOOL_ROOTS:%=$(OBJDIR)%$(PINTOOL_SUFFIX))
-TOOL_OBJS = $(OBJDIR)$(TOOL_ROOTS).o $(OBJDIR)cache.o $(OBJDIR)victim.o
+TOOL_OBJS = $(OBJDIR)$(TOOL_ROOTS).o $(OBJDIR)cache.o $(OBJDIR)percepTable.o
 
 
 ## Additional flags

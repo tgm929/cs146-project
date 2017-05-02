@@ -7,45 +7,47 @@
 #define __L_2_CACHE__
 
 #include <assert.h>
+#include <iostream>
+#include <cmath>
 #include "cache.h"
 
 
 class l2cache : public cache {
 public:
-    l2cache(int blockSize, int totalCacheSize, int associativity, cache *nextLevel, int insertion_pos) :
-        cache( blockSize, totalCacheSize, associativity, nextLevel, true, insertion_pos)
+    l2cache(int blockSize, int totalCacheSize, int associativity, cache *nextLevel) :
+        cache( blockSize, totalCacheSize, associativity, nextLevel, true)
     { }
 
     // Indicate that a zero-reuse block was evicted
-	void addZeroReuse()
-	{
-	    zeroReuseEvictions++;
-	}
+    void addZeroReuse()
+    {
+        zeroReuseEvictions++;
+    }
 
-	UINT64 getTotalZeroReuses()
-	{
-		return zeroReuseEvictions;
-	}
+    UINT64 getTotalZeroReuses()
+    {
+        return zeroReuseEvictions;
+    }
 
-	void queueInsert( int setBits, int MRU_index, int insert_pos )
-	{
-	    int upperBounds = assoc - 1;
+    void queueInsert( int setBits, int MRU_index, int insert_pos )
+    {
+        int upperBounds = assoc - 1;
 
-	    // Update all of the other blocks behind the newly inserted block
-	    for( int i = 0; i < assoc; i++ )
-	    {
-	        if( cacheMem[ i + setBits*assoc ].LRU_status >= insert_pos &&
-	                cacheMem[ i + setBits*assoc ].LRU_status < upperBounds )
-	        {
-	            cacheMem[ i + setBits*assoc ].LRU_status++;
-	        }
-	    }    
+        // Update all of the other blocks behind the newly inserted block
+        for( int i = 0; i < assoc; i++ )
+        {
+            if( cacheMem[ i + setBits*assoc ].LRU_status >= insert_pos &&
+                    cacheMem[ i + setBits*assoc ].LRU_status < upperBounds )
+            {
+                cacheMem[ i + setBits*assoc ].LRU_status++;
+            }
+        }    
 
-	    // set the LRU position of the new block to the desired value
-	    cacheMem[ MRU_index + setBits*assoc ].LRU_status = insert_pos;
-	}
+        // set the LRU position of the new block to the desired value
+        cacheMem[ MRU_index + setBits*assoc ].LRU_status = insert_pos;
+    }
 
-	void addressRequest( unsigned long address ) {
+    /*void addressRequest( unsigned long address ) {
 
     // Compute Set / Tag
     unsigned long tagField = getTag( address );
@@ -105,7 +107,7 @@ public:
         cacheMem[ index + setField*assoc].zeroReuse = false;                
 
         }
-    }
+    }*/
 
 
     // MY CODE BELOW HERE
@@ -159,7 +161,7 @@ public:
         return cacheMem[ index + setField*assoc].zeroReuse;
     }
 
-    void cache::addressHit( unsigned long address ) {
+    void addressReuse( unsigned long address ) {
         // Count that access as a hit
         addRequest();
         addHit();
@@ -177,8 +179,8 @@ public:
         cacheMem[ index + setField*assoc].zeroReuse = false; 
     }
 
-    void cache::addressMissDynamic( unsigned long address, int reusePrediction, unsigned long ins_ptr, int tableSize ) {
-        
+    void addressMissDynamic( unsigned long address, int reusePrediction, unsigned long ins_ptr, int tableSize ) {
+    
         // Count that access as a hit
         addRequest();
         addTotalMiss();
@@ -198,7 +200,7 @@ public:
         }
 
         int insertPosition = getInsertPosition(reusePrediction);
-        int hashVal = (ins_ptr >> (getBlockOffsetSize()) % tableSize;
+        int hashVal = (ins_ptr >> (getBlockOffsetSize())) % tableSize;
 
         // Update LRU / Tag / Valid
         cacheMem[ indexLRU + setField*assoc].Tag = tagField;
@@ -210,8 +212,7 @@ public:
 
         // Insert it at a specified value within the queue
         queueInsert(setField, indexLRU, insertPosition);
-    }    
-
+    }
 };
 
 #endif

@@ -50,7 +50,7 @@ l1icache* icache;
 l1dcache* dcache;
 l2cache* llcache;
 memory* mem;
-perceptron* percepTable;
+percepTable* perceptron;
 
 // Keep track if instruction counts so we know when to end simmulation
 UINT64 icount;
@@ -86,7 +86,7 @@ void CreateCaches(void)
     // Create the one and only memory
     mem = new memory();
 
-    int ins_pos = (int) KnobInsertPos.Value();
+    //int ins_pos = (int) KnobInsertPos.Value();
 
     // Parse config file and create the three caches
     int i = 0;
@@ -99,7 +99,7 @@ void CreateCaches(void)
         switch(i){
             case 0:
                 parser >> bsize >> comma >> csize >> comma >> assoc;
-                llcache = new l2cache(bsize, csize, assoc, mem, ins_pos);
+                llcache = new l2cache(bsize, csize, assoc, mem);
                 break;
             case 1:
                 parser >> bsize >> comma >> csize >> comma >> assoc;
@@ -142,7 +142,7 @@ void MemoryOp(ADDRINT address, ADDRINT ins_ptr)
         if(llcache->checkHit(address))
         {
             dcache->addressMiss(address);
-            llcache->addressHit(address);
+            llcache->addressReuse(address);
         }
         else
         {
@@ -183,7 +183,7 @@ void AllInstructions(ADDRINT ins_ptr)
         if(llcache->checkHit(ins_ptr))
         {
             icache->addressMiss(ins_ptr);
-            llcache->addressHit(ins_ptr);
+            llcache->addressReuse(ins_ptr);
         }
         else
         {
@@ -215,7 +215,7 @@ void PrintResults(void)
     out.precision(2);
 
     float l2missrate =  (float)llcache->getTotalMiss() / ((float) llcache->getRequest()) * 100.;
-    float l2zerreouserate =  (float)llcache->getZeroReuses() / ((float) llcache->getTotalMiss()) * 100.;
+    float l2zerreouserate =  (float)llcache->getTotalZeroReuses() / ((float) llcache->getTotalMiss()) * 100.;
 
 
     out << "---------------------------------------";
