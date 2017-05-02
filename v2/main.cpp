@@ -215,7 +215,7 @@ void PrintResults(void)
     out.precision(2);
 
     float l2missrate =  (float)llcache->getTotalMiss() / ((float) llcache->getRequest()) * 100.;
-    float l2zerreouserate =  (float)llcache->getTotalZeroReuses() / ((float) llcache->getTotalMiss()) * 100.;
+    float l2zerreouserate =  (float)llcache->getTotalZeroReuses() / ((float) llcache->getEntryRemoved()) * 100.;
 
 
     out << "---------------------------------------";
@@ -238,6 +238,11 @@ void PrintResults(void)
         << "\t\tL2-cache ways               : " << llcache->getCacheAssoc() << endl
         << "\t\tL2-cache block size (bytes) : " << llcache->getCacheBlockSize() << endl;
 
+    out << endl
+        << "\t\tPerceptron Table size (bytes)       : " << perceptron->getTableSz() << endl
+        << "\t\tPerceptron Table Max Counter Value  : " << perceptron->getMaxCtr() << endl
+        << "\t\tPerceptron Table Threshold Value    : " << perceptron->getThreshold() << endl;
+
     out << "Simulated events->" << endl;
 
     out << "\t\t I-Cache Miss: " << icache->getTotalMiss() << " out of " << icache->getRequest() << endl;
@@ -247,8 +252,8 @@ void PrintResults(void)
     out << "\t\t L2-Cache Miss: " << llcache->getTotalMiss() << " out of " << llcache->getRequest();
     out << " (" << l2missrate << " percent)" << endl;
 
-    out << "\t\t L2-Cache Zero Reuse Blocks: " << llcache->getTotalZeroReuses() << " out of ";
-    out << llcache->getTotalMiss() << " (" << l2zerreouserate << " percent)" << endl;
+    out << "\t\t L2-Cache Zero Reuse Evictions: " << llcache->getTotalZeroReuses() << " out of ";
+    out << llcache->getEntryRemoved() << " (" << l2zerreouserate << " percent)" << endl;
 
     out << endl;
 
